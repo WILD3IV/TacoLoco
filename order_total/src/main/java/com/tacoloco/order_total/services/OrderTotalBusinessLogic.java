@@ -23,16 +23,15 @@ public class OrderTotalBusinessLogic {
     // Establish logging...
     private static final Logger log = LogManager.getLogger(OrderTotalBusinessLogic.class);
 
-    final BigDecimal veggieTacoPrice = new BigDecimal(2.5);
-    final BigDecimal chickenTacoPrice = new BigDecimal(3);
-    final BigDecimal beefTacoPrice = new BigDecimal(3);
-    final BigDecimal chorizoTacoPrice = new BigDecimal(3.5);
+    final BigDecimal veggieTacoPrice = new BigDecimal(2.5); // Veggie Taco price default
+    final BigDecimal chickenTacoPrice = new BigDecimal(3); // Chicken Taco price default
+    final BigDecimal beefTacoPrice = new BigDecimal(3); // Beef Taco price default
+    final BigDecimal chorizoTacoPrice = new BigDecimal(3.5); // Chorizo taco price default
 
     /**
      * @param orderInput - Input object
      * @param orderTotalResponse - Response object
      */
-
     public void getOrderTotal (OrderInput orderInput, OrderTotalResponse orderTotalResponse) {
         
         log.info("OrderTotalBusinessLogic.getOrderTotal");

@@ -2,7 +2,6 @@ package com.tacoloco.order_total.model;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -19,7 +18,6 @@ public class OrderItem {
 
     private BigDecimal itemQty;
 
-    @JsonIgnore
     private BigDecimal itemPrice;
     
 }
