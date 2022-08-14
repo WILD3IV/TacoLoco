@@ -5,23 +5,32 @@ import java.math.RoundingMode;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.tacoloco.order_total.exception.InputErrorException;
+import com.tacoloco.order_total.exception.DatabaseException;
+import com.tacoloco.order_total.model.MenuPrice;
 import com.tacoloco.order_total.model.OrderInput;
 import com.tacoloco.order_total.model.OrderItem;
 import com.tacoloco.order_total.model.OrderTotalResponse;
+import com.tacoloco.order_total.repository.TacoPriceRepository;
 
 /**
  * OrderTotalBusinessLogic contains business logic for totaling orders.
+ * Retrieves menu item prices from mySQL database
  * 
  * @author John Wilde
- * @version 1.0
+ * @version 1.1
  */
 @Component
 public class OrderTotalBusinessLogic {
 
     // Establish logging...
     private static final Logger log = LogManager.getLogger(OrderTotalBusinessLogic.class);
+
+    @Autowired
+    TacoPriceRepository tacoPriceRepo;
 
     final BigDecimal veggieTacoPrice = new BigDecimal(2.5); // Veggie Taco price default
     final BigDecimal chickenTacoPrice = new BigDecimal(3); // Chicken Taco price default
@@ -35,33 +44,15 @@ public class OrderTotalBusinessLogic {
     public void getOrderTotal (OrderInput orderInput, OrderTotalResponse orderTotalResponse) {
         
         log.info("OrderTotalBusinessLogic.getOrderTotal");
-       
         
         for(OrderItem orderItem : orderInput.getOrderItems()) {
-            switch (orderItem.getItemType()) { // item type switch for dealing with distinct item types
-                case "Veggie Taco" : 
-                    if (orderItem.getItemPrice() == null) { 
-                        log.info("Price not provided - setting default");
-                        orderItem.setItemPrice(veggieTacoPrice); 
-                    }
-                case "Chicken Taco" :
-                    if (orderItem.getItemPrice() == null) { 
-                        log.info("Price not provided - setting default");
-                        orderItem.setItemPrice(chickenTacoPrice); 
-                    }
-                case "Beef Taco" :
-                    if (orderItem.getItemPrice() == null) { 
-                        log.info("Price not provided - setting default");
-                        orderItem.setItemPrice(beefTacoPrice); 
-                    }
-                case "Chorizo Taco" :
-                    if (orderItem.getItemPrice() == null) { 
-                        log.info("Price not provided - setting default");
-                        orderItem.setItemPrice(chorizoTacoPrice); 
-                    }
-                default: break;
-            }
+            
+            //get price from database
+            MenuPrice menuPrice = tacoPriceRepo.findByItemType(orderItem.getItemType()).orElseThrow(() -> new DatabaseException("Price could not be retrieved from database"));
+            log.info(menuPrice.toString());
 
+            orderItem.setItemPrice(menuPrice.getItemPrice()); //set price
+            log.info(orderItem.toString());
 
             orderTotalResponse.setOrderPriceTotal(orderTotalResponse.getOrderPriceTotal().add(orderItem.getItemPrice().multiply(orderItem.getItemQty()))); // order total = order total + (item price * item qty)
             orderTotalResponse.setOrderItemQtyTotal(orderTotalResponse.getOrderItemQtyTotal().add(orderItem.getItemQty())); // update total order item quantity
