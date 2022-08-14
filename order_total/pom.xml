@@ -12,7 +12,8 @@
 	<artifactId>order_total</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>order_total</name>
-	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
+	<description>Taco Loco Webservice for order totals</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
