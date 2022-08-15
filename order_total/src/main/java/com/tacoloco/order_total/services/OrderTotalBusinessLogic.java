@@ -31,55 +31,46 @@ public class OrderTotalBusinessLogic {
     @Autowired
     TacoPriceRepository tacoPriceRepo;
 
-    /**
-     * @param orderInput - Input object
-     * @param orderTotalResponse - Response object
-     */
     public void getOrderTotal (OrderInput orderInput, OrderTotalResponse orderTotalResponse) {
-        
-        log.info("OrderTotalBusinessLogic.getOrderTotal");
-        
         for(OrderItem orderItem : orderInput.getOrderItems()) {
-            
-            //get price from database
+
             MenuPrice menuPrice = tacoPriceRepo.findByItemType(orderItem.getItemType())
                 .orElseThrow(() -> new DatabaseException("Price could not be retrieved from database"));
 
-            orderItem.setItemPrice(menuPrice.getItemPrice()); //set price
+            switch (orderItem.getMenuType()) {
+                case "Taco" :
+                    orderTotalResponse.setTacoPriceTotal(orderTotalResponse.getTacoPriceTotal().add(menuPrice.getItemPrice().multiply(orderItem.getItemQty())));
+                    orderTotalResponse.setTacoQty(orderTotalResponse.getTacoQty().add(orderItem.getItemQty()));
+                case "Hot Dog":
+                    orderTotalResponse.setHotDogPriceTotal(orderTotalResponse.getHotDogPriceTotal().add(menuPrice.getItemPrice().multiply(orderItem.getItemQty())));
+                default:break;
+            }
 
-            BigDecimal itemTotal = orderItem.getItemPrice().multiply(orderItem.getItemQty()); // item total = item price * item quantity
-            orderTotalResponse.setOrderPriceTotal(orderTotalResponse.getOrderPriceTotal().add(itemTotal)); // add item total to order total
-            orderTotalResponse.setOrderItemQtyTotal(orderTotalResponse.getOrderItemQtyTotal().add(orderItem.getItemQty())); // update total order item quantity
-
-
-            log.info("Added {} {}'s for a total of {}", orderItem.getItemQty(), orderItem.getItemType(), itemTotal);
         }
 
-        if(orderTotalResponse.getOrderItemQtyTotal().compareTo(new BigDecimal(4)) >= 0) { // if total item qty >= 4 apply auto 20% discount
-            applyDiscount(orderTotalResponse, new BigDecimal(0.2));
-        } else { // else set the grand total without any discount
-            orderTotalResponse.setGrandTotal(orderTotalResponse.getOrderPriceTotal()); // set grand total
-        }
+        orderTotalResponse.setOrderPriceTotal(orderTotalResponse.getTacoPriceTotal().add(orderTotalResponse.getHotDogPriceTotal())); // set order total before discount where total = tacos + hotdogs
 
-        // round BigDecimal for return formatting
-        orderTotalResponse.setOrderPriceTotal(orderTotalResponse.getOrderPriceTotal().setScale(2, RoundingMode.HALF_UP));
-        orderTotalResponse.setGrandTotal(orderTotalResponse.getGrandTotal().setScale(2, RoundingMode.HALF_UP));
-        orderTotalResponse.setDiscountApplied(orderTotalResponse.getDiscountApplied().setScale(2, RoundingMode.HALF_UP));
-    }   
+        if(orderTotalResponse.getTacoQty().compareTo(new BigDecimal(4)) >= 0) { // if total taco qty >= 4 apply auto 20% discount
+            orderTotalResponse.setDiscountApplied(new BigDecimal(0.20)); // set applied discount for the return
+            orderTotalResponse.setTacoPriceTotal(applyDiscount(orderTotalResponse.getTacoPriceTotal(), new BigDecimal(0.2)));
+        } 
+
+        orderTotalResponse.setGrandTotal(orderTotalResponse.getTacoPriceTotal().add(orderTotalResponse.getHotDogPriceTotal())); // add them again once discounts applied
+        
+         // round BigDecimal for return formatting
+         orderTotalResponse.setOrderPriceTotal(orderTotalResponse.getOrderPriceTotal().setScale(2, RoundingMode.HALF_UP));
+         orderTotalResponse.setGrandTotal(orderTotalResponse.getGrandTotal().setScale(2, RoundingMode.HALF_UP));
+         orderTotalResponse.setDiscountApplied(orderTotalResponse.getDiscountApplied().setScale(2, RoundingMode.HALF_UP));
+    }
 
     /**
      * sets grand total after applying discount
      * @param orderTotalResponse
      * @param discount
+     * @return total with applied discount
      */
-    private void applyDiscount(OrderTotalResponse orderTotalResponse, BigDecimal discount) {
+    private BigDecimal applyDiscount(BigDecimal total, BigDecimal discount) {
 
-        // determine order total with discount: grandTotal = total - (total * discount)
-        BigDecimal orderWithDiscount = orderTotalResponse.getOrderPriceTotal().subtract(orderTotalResponse.getOrderPriceTotal().multiply(discount)); 
-
-        orderTotalResponse.setGrandTotal(orderWithDiscount); // set grand total
-        orderTotalResponse.setDiscountApplied(discount); // set discount applied
-
-        log.info("Discount Applied {}", discount);
+        return total.subtract(total.multiply(discount));
     }
 }
