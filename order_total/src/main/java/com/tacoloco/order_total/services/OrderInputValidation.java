@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.tacoloco.order_total.exception.InputErrorException;
 import com.tacoloco.order_total.model.OrderInput;
@@ -15,7 +15,7 @@ import com.tacoloco.order_total.model.OrderItem;
  * @author John Wilde
  * @version 1.0
  */
-@Component
+@Service
 public class OrderInputValidation {
 
     // Establish logging...
