@@ -23,7 +23,7 @@
 6. `cd` to the `../order_total/targets/` directory and run `java -jar ./order_total-0.0.1-SNAPSHOT.jar`
 
 
-### JSON Request Body format
+### JSON Request Body format for current master branch
 ```
 {
     "orderItems":[
@@ -49,5 +49,16 @@
         }
     ]
  
+}
+```
+### JSON Request Body format for MySQL branch
+```
+{
+    "orderItems":[
+        {
+            "itemType": "Veggie Taco",
+            "itemQty": 5
+        },
+    ]
 }
 ```
