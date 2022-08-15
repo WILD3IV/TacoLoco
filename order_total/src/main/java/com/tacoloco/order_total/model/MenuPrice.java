@@ -26,6 +26,5 @@ public class MenuPrice {
     private String itemType;
 
     private BigDecimal itemPrice;
-
     
 }

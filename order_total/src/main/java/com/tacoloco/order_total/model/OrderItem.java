@@ -18,5 +18,7 @@ public class OrderItem {
     private BigDecimal itemQty;
 
     private BigDecimal itemPrice;
+
+    private String menuType;
     
 }
