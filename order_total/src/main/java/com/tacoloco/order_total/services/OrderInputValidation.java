@@ -30,7 +30,7 @@ public class OrderInputValidation {
                 inputErrors.add("itemType can't be null or empty.");
             } else {
                 if(!"Veggie Taco".equalsIgnoreCase(orderItem.getItemType()) && !"Beef Taco".equalsIgnoreCase(orderItem.getItemType()) &&
-                        !"Chicken Taco".equalsIgnoreCase(orderItem.getItemType()) &&!"Chorizo Taco".equalsIgnoreCase(orderItem.getItemType()) ) {
+                        !"Chicken Taco".equalsIgnoreCase(orderItem.getItemType()) &&!"Chorizo Taco".equalsIgnoreCase(orderItem.getItemType()) && !"Hot Dog".equalsIgnoreCase(orderItem.getItemType()) ) {
                     inputErrors.add(orderItem.getItemType() + " is not on the menu");
                 }
             }           
