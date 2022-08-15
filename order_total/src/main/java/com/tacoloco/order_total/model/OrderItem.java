@@ -1,8 +1,6 @@
 package com.tacoloco.order_total.model;
 
 import java.math.BigDecimal;
-
-
 import lombok.Data;
 
 /**
@@ -13,11 +11,14 @@ import lombok.Data;
  */
 @Data
 public class OrderItem {
+
     
     private String itemType;
 
     private BigDecimal itemQty;
 
     private BigDecimal itemPrice;
+
+    private String menuType;
     
 }

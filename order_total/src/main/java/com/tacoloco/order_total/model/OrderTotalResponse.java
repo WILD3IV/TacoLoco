@@ -1,6 +1,9 @@
 package com.tacoloco.order_total.model;
 
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 /**
@@ -14,6 +17,12 @@ public class OrderTotalResponse {
 
     /**@param orderTotal - total price of all items */
     private BigDecimal orderPriceTotal = new BigDecimal(0);
+
+    private BigDecimal hotDogPriceTotal = new BigDecimal(0);
+    
+    private BigDecimal tacoPriceTotal = new BigDecimal(0);
+    
+    private BigDecimal tacoQty = new BigDecimal(0);
 
     /**@param orderTotal - total price of all items */
     private BigDecimal orderItemQtyTotal = new BigDecimal(0);
